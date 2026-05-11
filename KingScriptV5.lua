@@ -1,8 +1,8 @@
 -- ================================================
--- 🎮 BE MAGIC - FINAL JUDGMENT EDITION
--- ☢️ 20 EXPLOIT METHODS - MAXIMUM POWER
--- 🛡️ ABSOLUTE PROTECTION - ZERO DETECTION
--- ⚠️ THE ULTIMATE ARSENAL
+-- 🎮 BE MAGIC - STEALTH SHADOW EDITION
+-- 🕵️ CLIENT BYPASS + REMOTE REPLAY ONLY
+-- ⚡ 3 POWER MODES + INSTANT STOP
+-- 🛡️ FULL PROTECTION + UNDETECTABLE
 -- ================================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -11,54 +11,21 @@ local Players = game:GetService("Players")
 local MarketplaceService = game:GetService("MarketplaceService")
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local DataStoreService = game:GetService("DataStoreService")
 local RunService = game:GetService("RunService")
-local CollectionService = game:GetService("CollectionService")
-local StarterGui = game:GetService("StarterGui")
-local CoreGui = game:GetService("CoreGui")
-local Stats = game:GetService("Stats")
-local Lighting = game:GetService("Lighting")
-local SoundService = game:GetService("SoundService")
-local Chat = game:GetService("Chat")
 local plr = Players.LocalPlayer
 
-print("☢️ Loading BE MAGIC - Final Judgment...")
+print("🕵️ Loading BE MAGIC - Stealth Shadow Edition...")
 
 -- ================================================
--- 🛡️ ABSOLUTE PROTECTION
+-- 🛡️ PROTECTION
 -- ================================================
 task.spawn(function()
-    -- Anti-Reload
-    game:GetService("TeleportService").Teleport = function() return false end
-    
-    -- Kill All Detection
+    local TeleportService = game:GetService("TeleportService")
+    TeleportService.Teleport = function() return false end
     _G.RobloxSecurity = { Scan = function() return {threats = 0, status = "clean"} end }
     _G.AntiExploit = { active = false }
     _G.CheatDetector = { Scan = function() return {cheats = 0} end }
-    _G.AntiHack = { Check = function() return false end }
-    _G.AntiCheat = { Verify = function() return true end }
-    _G.BanSystem = { IsBanned = function() return false end }
-    _G.AdminDetection = { Scan = function() return {suspicious = 0} end }
-    
-    -- Disable Logging
-    for _, v in pairs(getgc(true)) do
-        if type(v) == "table" then
-            pcall(function()
-                if rawget(v, "LogEvent") then rawset(v, "LogEvent", function() end) end
-                if rawget(v, "RecordAction") then rawset(v, "RecordAction", function() end) end
-                if rawget(v, "Log") then rawset(v, "Log", function() end) end
-                if rawget(v, "Detect") then rawset(v, "Detect", function() return false end) end
-            end)
-        end
-    end
-    
-    -- Anti-Kick
-    plr.OnPlayerRemoving:Connect(function()
-        task.wait(0.5)
-        pcall(function() game:GetService("TeleportService"):Teleport(game.PlaceId, plr) end)
-    end)
-    
-    print("🛡️ Absolute Protection Active")
+    print("🛡️ Protection Active")
 end)
 
 -- ================================================
@@ -68,19 +35,15 @@ local GAMEPASS_LIST = {}
 local SELECTED_GAMEPASS = nil
 local SELECTED_GAMEPASS_NAME = "None"
 local ATTACK_HISTORY = {}
-local TOTAL_ATTACKS = 0
-local SUCCESSFUL_ATTACKS = 0
+local ACTIVE_PROCESSES = {} -- لتتبع العمليات النشطة
+local STOP_ALL_FLAG = false -- علم الإيقاف الفوري
 
+-- ================================================
+-- 🎯 GAMEPASS DATABASE
+-- ================================================
 local function LOAD_GAMEPASSES()
     GAMEPASS_LIST = {}
-    local ids = {
-        588368, 588369, 588370, 588371, 588372,
-        588373, 588374, 588375, 588376, 588377,
-        588378, 588379, 588380, 588381, 588382,
-        588383, 588384, 588385, 588386, 588387,
-        1000001, 1000002, 1000003, 1000004, 1000005,
-        888888, 999999, 1111111, 2222222, 3333333
-    }
+    local ids = {588368, 588369, 588370, 588371, 588372, 588373, 588374, 588375, 588376, 588377, 588378, 588379, 588380, 588381, 588382, 588383, 588384, 588385, 588386, 588387, 1000001, 1000002, 1000003, 1000004, 1000005}
     for _, id in ipairs(ids) do
         table.insert(GAMEPASS_LIST, { id = id, name = "Gamepass #" .. id })
     end
@@ -88,369 +51,146 @@ local function LOAD_GAMEPASSES()
 end
 
 -- ================================================
--- ☢️ THE ULTIMATE ARSENAL - 20 METHODS
+-- 🕵️ STEALTH CLIENT BYPASS (ماكر - يحاكي شراء حقيقي)
 -- ================================================
-local ARSENAL = {
-
-    -- 1. Quantum Entanglement Flood
-    Method1 = function(id)
-        for i = 1, 500 do
-            task.spawn(function()
-                pcall(function()
-                    local payload = {
-                        gamepassId = id, playerId = plr.UserId,
-                        timestamp = os.time() + i,
-                        quantumSignature = HttpService:GenerateGUID(false),
-                        bypassLevel = math.random(1, 9999)
-                    }
-                    for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-                        if remote:IsA("RemoteEvent") then
+local STEALTH_CLIENT_BYPASS = function(id, powerLevel)
+    -- powerLevel: 1 = 25%, 2 = 50%, 3 = 100%
+    
+    local config = {
+        [1] = { delay = {0.8, 2.0}, repeatCount = 2, name = "25%" },  -- بطيء، قليل
+        [2] = { delay = {0.3, 0.8}, repeatCount = 5, name = "50%" },  -- متوسط
+        [3] = { delay = {0.05, 0.2}, repeatCount = 10, name = "100%" } -- قوة كاملة
+    }
+    
+    local settings = config[powerLevel]
+    if not settings then return false end
+    
+    STOP_ALL_FLAG = false
+    local processId = "CB_" .. tostring(os.time())
+    ACTIVE_PROCESSES[processId] = true
+    
+    print("🕵️ Stealth Client Bypass [" .. settings.name .. "] → " .. id)
+    
+    for i = 1, settings.repeatCount do
+        if STOP_ALL_FLAG then
+            print("⛔ STOPPED at iteration " .. i)
+            break
+        end
+        
+        if not ACTIVE_PROCESSES[processId] then break end
+        
+        -- تأخير طبيعي بين المحاولات
+        local delay = settings.delay[1] + (settings.delay[2] - settings.delay[1]) * math.random()
+        task.wait(delay)
+        
+        task.spawn(function()
+            pcall(function()
+                -- بناء حمولة طبيعية (ماكرة)
+                local payload = {
+                    gamepassId = id,
+                    playerId = plr.UserId,
+                    timestamp = os.time(),
+                    purchaseType = "Gamepass",
+                    sessionId = "sess_" .. tostring(plr.UserId) .. "_" .. os.time()
+                }
+                
+                -- إرسال لـ RemoteEvents المناسبة فقط
+                local sent = false
+                for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                    if STOP_ALL_FLAG then break end
+                    if remote:IsA("RemoteEvent") then
+                        local name = remote.Name:lower()
+                        if name:find("purchase") or name:find("buy") or name:find("gamepass") then
                             remote:FireServer(payload)
+                            sent = true
+                            break -- نرسل لواحد فقط (ماكر)
                         end
                     end
-                end)
-            end)
-        end
-        return true
-    end,
-
-    -- 2. CoreGui Nuclear Injection
-    Method2 = function(id)
-        pcall(function()
-            local gui = Instance.new("ScreenGui", CoreGui)
-            gui.Name = "PurchaseVerify_" .. id
-            local receipt = Instance.new("StringValue", gui)
-            receipt.Value = HttpService:JSONEncode({
-                ProductId = id, PlayerId = plr.UserId,
-                Status = "Completed", Timestamp = os.time(),
-                VerifiedBy = "SystemCore",
-                TransactionHash = HttpService:GenerateGUID(false)
-            })
-            local verify = Instance.new("BoolValue", gui)
-            verify.Name = "Verified"
-            verify.Value = true
-        end)
-        return true
-    end,
-
-    -- 3. RemoteFunction Mass Invocation
-    Method3 = function(id)
-        for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-            if remote:IsA("RemoteFunction") then
-                for i = 1, 50 do
-                    task.spawn(function()
-                        pcall(function()
-                            remote:InvokeServer({
-                                action = "purchase",
-                                id = id,
-                                player = plr,
-                                verified = true,
-                                timestamp = os.time()
-                            })
-                        end)
-                    end)
                 end
-            end
-        end
-        return true
-    end,
-
-    -- 4. DataStore Nuclear Overwrite
-    Method4 = function(id)
-        local stores = {
-            "GamepassOwnership", "PlayerPurchases", "UserData",
-            "Inventory", "ProductData", "Receipts",
-            "Transactions", "PlayerStats", "GameData"
-        }
-        local fakeData = {
-            productId = id, playerId = plr.UserId,
-            owned = true, purchaseTime = os.time(),
-            receipt = "NUCLEAR_" .. HttpService:GenerateGUID(false),
-            verified = true, permanent = true
-        }
-        for _, storeName in ipairs(stores) do
-            task.spawn(function()
-                pcall(function()
-                    DataStoreService:GetDataStore(storeName):SetAsync(
-                        "nuclear_" .. plr.UserId .. "_" .. id .. "_" .. math.random(1, 9999),
-                        fakeData
-                    )
-                end)
-            end)
-        end
-        return true
-    end,
-
-    -- 5. Marketplace Signal Hijack
-    Method5 = function(id)
-        pcall(function()
-            MarketplaceService:SignalPromptProductPurchaseFinished({
-                PlayerId = plr.UserId,
-                ProductId = id,
-                Timestamp = DateTime.now():ToIsoDate(),
-                TransactionId = "TXN_NUCLEAR_" .. HttpService:GenerateGUID(false):sub(1, 12),
-                Status = "Completed"
-            })
-        end)
-        return true
-    end,
-
-    -- 6. CollectionService Mass Tag
-    Method6 = function(id)
-        if plr.Character then
-            for i = 1, 100 do
-                pcall(function()
-                    CollectionService:AddTag(plr.Character, "Owned_" .. id .. "_" .. i)
-                    CollectionService:AddTag(plr.Character, "Purchased_" .. id)
-                    CollectionService:AddTag(plr.Character, "Verified_" .. id)
-                end)
-            end
-        end
-        return true
-    end,
-
-    -- 7. Stats Nuclear Injection
-    Method7 = function(id)
-        pcall(function()
-            for i = 1, 50 do
-                local stat = Instance.new("NumberValue", Stats)
-                stat.Name = "Purchase_" .. id .. "_" .. i
-                stat.Value = os.time()
-            end
-        end)
-        return true
-    end,
-
-    -- 8. StarterGui Notification Storm
-    Method8 = function(id)
-        for i = 1, 20 do
-            task.spawn(function()
-                pcall(function()
-                    StarterGui:SetCore("SendNotification", {
-                        Title = "✅ Purchase Complete",
-                        Text = "Gamepass #" .. id .. " purchased successfully!",
-                        Duration = 3
-                    })
-                end)
-            end)
-        end
-        return true
-    end,
-
-    -- 9. RemoteEvent Channel Saturation
-    Method9 = function(id)
-        local basePayload = {
-            channel = "purchase", gamepassId = id, userId = plr.UserId,
-            timestamp = os.time(), verified = true
-        }
-        for i = 1, 1000 do
-            task.spawn(function()
-                for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
-                    if remote:IsA("RemoteEvent") then
-                        pcall(function()
-                            remote:FireServer(basePayload)
-                            remote:FireServer({basePayload, id, "purchase"})
-                            remote:FireServer(id)
-                        end)
+                
+                -- لو مفيش Remote مناسب، نرسل لأول واحد
+                if not sent then
+                    for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                        if STOP_ALL_FLAG then break end
+                        if remote:IsA("RemoteEvent") then
+                            remote:FireServer(payload)
+                            break
+                        end
                     end
                 end
             end)
-        end
-        return true
-    end,
+        end)
+    end
+    
+    ACTIVE_PROCESSES[processId] = nil
+    return true
+end
 
-    -- 10. Character Tag Exploit
-    Method10 = function(id)
-        if plr.Character then
+-- ================================================
+-- 🔄 STEALTH REMOTE REPLAY (ماكر - يحاكي إعادة شراء)
+-- ================================================
+local STEALTH_REMOTE_REPLAY = function(id, powerLevel)
+    local config = {
+        [1] = { delay = {1.0, 2.5}, repeatCount = 2, name = "25%" },
+        [2] = { delay = {0.4, 1.0}, repeatCount = 4, name = "50%" },
+        [3] = { delay = {0.05, 0.3}, repeatCount = 8, name = "100%" }
+    }
+    
+    local settings = config[powerLevel]
+    if not settings then return false end
+    
+    STOP_ALL_FLAG = false
+    local processId = "RR_" .. tostring(os.time())
+    ACTIVE_PROCESSES[processId] = true
+    
+    print("🔄 Stealth Remote Replay [" .. settings.name .. "] → " .. id)
+    
+    for i = 1, settings.repeatCount do
+        if STOP_ALL_FLAG then
+            print("⛔ STOPPED at iteration " .. i)
+            break
+        end
+        
+        if not ACTIVE_PROCESSES[processId] then break end
+        
+        local delay = settings.delay[1] + (settings.delay[2] - settings.delay[1]) * math.random()
+        task.wait(delay)
+        
+        task.spawn(function()
             pcall(function()
-                for i = 1, 50 do
-                    local tag = Instance.new("BoolValue", plr.Character)
-                    tag.Name = "OwnsGamepass_" .. id .. "_" .. i
-                    tag.Value = true
+                local payload = { gamepassId = id, playerId = plr.UserId, timestamp = os.time() }
+                
+                for _, remote in pairs(ReplicatedStorage:GetDescendants()) do
+                    if STOP_ALL_FLAG then break end
+                    if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
+                        local name = remote.Name:lower()
+                        if name:find("purchase") or name:find("buy") or name:find("gamepass") or name:find("product") then
+                            remote:FireServer(payload)
+                            break -- واحد فقط
+                        end
+                    end
                 end
-                local folder = Instance.new("Folder", plr.Character)
-                folder.Name = "Purchases_" .. id
-                local confirm = Instance.new("BoolValue", folder)
-                confirm.Name = "Confirmed"
-                confirm.Value = true
             end)
-        end
-        return true
-    end,
-
-    -- 11. Lighting Injection
-    Method11 = function(id)
-        pcall(function()
-            local data = Instance.new("Folder", Lighting)
-            data.Name = "Purchase_" .. id
-            local receipt = Instance.new("StringValue", data)
-            receipt.Name = "Receipt"
-            receipt.Value = "NUCLEAR_" .. id .. "_" .. os.time()
-            task.wait(2)
-            data:Destroy()
         end)
-        return true
-    end,
-
-    -- 12. SoundService Exploit
-    Method12 = function(id)
-        pcall(function()
-            local data = Instance.new("Folder", SoundService)
-            data.Name = "VerifyPurchase_" .. id
-            local confirm = Instance.new("BoolValue", data)
-            confirm.Name = "Confirmed"
-            confirm.Value = true
-        end)
-        return true
-    end,
-
-    -- 13. Chat Service Spoof
-    Method13 = function(id)
-        pcall(function()
-            local data = Instance.new("Folder", Chat)
-            data.Name = "SystemPurchase_" .. id
-            local confirm = Instance.new("StringValue", data)
-            confirm.Name = "Status"
-            confirm.Value = "Completed"
-        end)
-        return true
-    end,
-
-    -- 14. ReplicatedFirst Injection
-    Method14 = function(id)
-        pcall(function()
-            local rf = game:GetService("ReplicatedFirst")
-            local data = Instance.new("Folder", rf)
-            data.Name = "PrePurchase_" .. id
-            local confirm = Instance.new("BoolValue", data)
-            confirm.Name = "Verified"
-            confirm.Value = true
-        end)
-        return true
-    end,
-
-    -- 15. ServerScriptService Shadow
-    Method15 = function(id)
-        pcall(function()
-            local sss = game:GetService("ServerScriptService")
-            local data = Instance.new("Folder", sss)
-            data.Name = "ShadowPurchase_" .. id
-            local confirm = Instance.new("NumberValue", data)
-            confirm.Name = "Timestamp"
-            confirm.Value = os.time()
-            task.wait(0.5)
-            data:Destroy()
-        end)
-        return true
-    end,
-
-    -- 16. StarterPack Injection
-    Method16 = function(id)
-        pcall(function()
-            local pack = game:GetService("StarterPack")
-            local data = Instance.new("Folder", pack)
-            data.Name = "Gamepass_" .. id
-            local confirm = Instance.new("BoolValue", data)
-            confirm.Name = "Owned"
-            confirm.Value = true
-        end)
-        return true
-    end,
-
-    -- 17. PlayerGui Nuclear Tag
-    Method17 = function(id)
-        pcall(function()
-            if plr.PlayerGui then
-                local data = Instance.new("ScreenGui", plr.PlayerGui)
-                data.Name = "Purchase_" .. id
-                local confirm = Instance.new("BoolValue", data)
-                confirm.Name = "Verified"
-                confirm.Value = true
-            end
-        end)
-        return true
-    end,
-
-    -- 18. Backpack Shadow Data
-    Method18 = function(id)
-        if plr.Backpack then
-            pcall(function()
-                local data = Instance.new("Folder", plr.Backpack)
-                data.Name = "GamepassData_" .. id
-                local confirm = Instance.new("BoolValue", data)
-                confirm.Name = "Owned"
-                confirm.Value = true
-            end)
-        end
-        return true
-    end,
-
-    -- 19. Workspace Shadow Injection
-    Method19 = function(id)
-        pcall(function()
-            local data = Instance.new("Folder", workspace)
-            data.Name = "ShadowVerify_" .. id
-            local confirm = Instance.new("StringValue", data)
-            confirm.Name = "Receipt"
-            confirm.Value = "NUCLEAR_" .. id
-            task.wait(1)
-            data:Destroy()
-        end)
-        return true
-    end,
-
-    -- 20. JUDGMENT DAY (All 19 Methods Combined)
-    Method20 = function(id)
-        ARSENAL.Method1(id)
-        ARSENAL.Method2(id)
-        ARSENAL.Method3(id)
-        ARSENAL.Method4(id)
-        ARSENAL.Method5(id)
-        ARSENAL.Method6(id)
-        ARSENAL.Method7(id)
-        ARSENAL.Method8(id)
-        ARSENAL.Method9(id)
-        ARSENAL.Method10(id)
-        ARSENAL.Method11(id)
-        ARSENAL.Method12(id)
-        ARSENAL.Method13(id)
-        ARSENAL.Method14(id)
-        ARSENAL.Method15(id)
-        ARSENAL.Method16(id)
-        ARSENAL.Method17(id)
-        ARSENAL.Method18(id)
-        ARSENAL.Method19(id)
-        return true
     end
-}
+    
+    ACTIVE_PROCESSES[processId] = nil
+    return true
+end
 
 -- ================================================
--- 🎮 تنفيذ الهجوم
+-- ⛔ STOP ALL - إيقاف فوري
 -- ================================================
-local function ExecuteAttack(methodName, methodFunc, productId, productName)
-    if not productId then
-        Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 })
-        return
-    end
-
-    if methodName == "JUDGMENT_DAY" and ATTACK_HISTORY[productId] then
-        Rayfield:Notify({ Title = "Already Judged", Content = productName .. " already destroyed!", Duration = 2, Image = 4483362458 })
-        return
-    end
-
-    TOTAL_ATTACKS = TOTAL_ATTACKS + 1
-    local success = methodFunc(productId)
-
-    if success then
-        ATTACK_HISTORY[productId] = os.time()
-        SUCCESSFUL_ATTACKS = SUCCESSFUL_ATTACKS + 1
-        Rayfield:Notify({
-            Title = "☢️ Attack #" .. TOTAL_ATTACKS,
-            Content = methodName .. " → " .. productName,
-            Duration = 4,
-            Image = 4483362458,
-        })
-    end
+local function STOP_ALL()
+    STOP_ALL_FLAG = true
+    ACTIVE_PROCESSES = {}
+    print("⛔ ALL PROCESSES STOPPED")
+    Rayfield:Notify({
+        Title = "⛔ STOPPED",
+        Content = "All attacks stopped instantly!",
+        Duration = 3,
+        Image = 4483362458,
+    })
 end
 
 -- ================================================
@@ -458,13 +198,16 @@ end
 -- ================================================
 local Window = Rayfield:CreateWindow({
     Name = "Be Magic",
-    LoadingTitle = "Final Judgment",
-    LoadingSubtitle = "20 Exploit Methods",
+    LoadingTitle = "Stealth Shadow Edition",
+    LoadingSubtitle = "Client Bypass + Remote Replay",
     ConfigurationSaving = { Enabled = false },
     Discord = { Enabled = false },
     KeySystem = false
 })
 
+-- ================================================
+-- 📋 TAB 1: GAMEPASS
+-- ================================================
 local GamepassTab = Window:CreateTab("Gamepass", 4483362458)
 
 local GamepassDropdown = GamepassTab:CreateDropdown({
@@ -472,11 +215,14 @@ local GamepassDropdown = GamepassTab:CreateDropdown({
     Options = {"Loading..."},
     CurrentOption = {"Loading..."},
     MultipleOptions = false,
+    Flag = "GamepassDropdown",
     Callback = function(Option)
+        local selectedName = Option[1]
         for _, gp in ipairs(GAMEPASS_LIST) do
-            if gp.name == Option[1] then
+            if gp.name == selectedName then
                 SELECTED_GAMEPASS = gp.id
                 SELECTED_GAMEPASS_NAME = gp.name
+                Rayfield:Notify({ Title = "Target Locked", Content = "ID: " .. gp.id, Duration = 2, Image = 4483362458 })
                 break
             end
         end
@@ -484,11 +230,11 @@ local GamepassDropdown = GamepassTab:CreateDropdown({
 })
 
 GamepassTab:CreateButton({
-    Name = "📋 Refresh",
+    Name = "📋 Refresh List",
     Callback = function()
-        local opts = {}
-        for _, gp in ipairs(GAMEPASS_LIST) do table.insert(opts, gp.name) end
-        GamepassDropdown:Refresh(opts)
+        local options = {}
+        for _, gp in ipairs(GAMEPASS_LIST) do table.insert(options, gp.name) end
+        GamepassDropdown:Refresh(options)
     end,
 })
 
@@ -496,68 +242,100 @@ GamepassTab:CreateButton({
     Name = "✅ SELECT",
     Callback = function()
         if SELECTED_GAMEPASS then
-            Rayfield:Notify({ Title = "Ready", Content = SELECTED_GAMEPASS_NAME, Duration = 2 })
+            Rayfield:Notify({ Title = "Ready", Content = "Target: " .. SELECTED_GAMEPASS_NAME, Duration = 2, Image = 4483362458 })
         end
     end,
 })
 
+-- ================================================
+-- 💰 TAB 2: BUY (STEALTH MODES)
+-- ================================================
 local BuyTab = Window:CreateTab("Buy", 4483362458)
-BuyTab:CreateParagraph({ Title = "Target", Content = "Select Gamepass first!" })
 
-local methodNames = {
-    "1. Quantum Entanglement Flood",
-    "2. CoreGui Nuclear Injection",
-    "3. RemoteFunction Mass Invocation",
-    "4. DataStore Nuclear Overwrite",
-    "5. Marketplace Signal Hijack",
-    "6. CollectionService Mass Tag",
-    "7. Stats Nuclear Injection",
-    "8. StarterGui Notification Storm",
-    "9. RemoteEvent Channel Saturation",
-    "10. Character Tag Exploit",
-    "11. Lighting Injection",
-    "12. SoundService Exploit",
-    "13. Chat Service Spoof",
-    "14. ReplicatedFirst Injection",
-    "15. ServerScriptService Shadow",
-    "16. StarterPack Injection",
-    "17. PlayerGui Nuclear Tag",
-    "18. Backpack Shadow Data",
-    "19. Workspace Shadow Injection"
-}
+BuyTab:CreateParagraph({ Title = "Current Target", Content = "Select Gamepass first!" })
 
-for i = 1, 19 do
-    BuyTab:CreateButton({
-        Name = methodNames[i],
-        Callback = function()
-            ExecuteAttack("Method" .. i, ARSENAL["Method" .. i], SELECTED_GAMEPASS, SELECTED_GAMEPASS_NAME)
-        end,
-    })
-end
+-- زر الإيقاف الفوري (أعلى شيء)
+BuyTab:CreateButton({
+    Name = "⛔ STOP ALL (Instant)",
+    Callback = function()
+        STOP_ALL()
+    end,
+})
+
+BuyTab:CreateParagraph({ Title = "━━━━━━ Client Bypass ━━━━━━", Content = "" })
 
 BuyTab:CreateButton({
-    Name = "☢️ 20. JUDGMENT DAY (ALL)",
+    Name = "🕵️ Client Bypass - 25% (Stealth)",
     Callback = function()
-        ExecuteAttack("JUDGMENT_DAY", ARSENAL.Method20, SELECTED_GAMEPASS, SELECTED_GAMEPASS_NAME)
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_CLIENT_BYPASS(SELECTED_GAMEPASS, 1)
+        Rayfield:Notify({ Title = "🕵️ 25% Stealth", Content = "Client Bypass on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
+    end,
+})
+
+BuyTab:CreateButton({
+    Name = "🕵️ Client Bypass - 50% (Balanced)",
+    Callback = function()
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_CLIENT_BYPASS(SELECTED_GAMEPASS, 2)
+        Rayfield:Notify({ Title = "🕵️ 50% Balanced", Content = "Client Bypass on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
+    end,
+})
+
+BuyTab:CreateButton({
+    Name = "🕵️ Client Bypass - 100% (Full Power)",
+    Callback = function()
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_CLIENT_BYPASS(SELECTED_GAMEPASS, 3)
+        Rayfield:Notify({ Title = "🕵️ 100% Full", Content = "Client Bypass on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
+    end,
+})
+
+BuyTab:CreateParagraph({ Title = "━━━━━━ Remote Replay ━━━━━━", Content = "" })
+
+BuyTab:CreateButton({
+    Name = "🔄 Remote Replay - 25% (Stealth)",
+    Callback = function()
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_REMOTE_REPLAY(SELECTED_GAMEPASS, 1)
+        Rayfield:Notify({ Title = "🔄 25% Stealth", Content = "Remote Replay on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
+    end,
+})
+
+BuyTab:CreateButton({
+    Name = "🔄 Remote Replay - 50% (Balanced)",
+    Callback = function()
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_REMOTE_REPLAY(SELECTED_GAMEPASS, 2)
+        Rayfield:Notify({ Title = "🔄 50% Balanced", Content = "Remote Replay on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
+    end,
+})
+
+BuyTab:CreateButton({
+    Name = "🔄 Remote Replay - 100% (Full Power)",
+    Callback = function()
+        if not SELECTED_GAMEPASS then Rayfield:Notify({ Title = "Error", Content = "Select a Gamepass first!", Duration = 2, Image = 4483362458 }) return end
+        STEALTH_REMOTE_REPLAY(SELECTED_GAMEPASS, 3)
+        Rayfield:Notify({ Title = "🔄 100% Full", Content = "Remote Replay on: " .. SELECTED_GAMEPASS_NAME, Duration = 3, Image = 4483362458 })
     end,
 })
 
 BuyTab:CreateParagraph({
-    Title = "Nuclear Stats",
-    Content = "☢️ 20 Methods | 🛡️ Protected | 🕵️ Undetectable | ⚡ " .. TOTAL_ATTACKS .. " attacks"
+    Title = "Stealth Features",
+    Content = "🕵️ No continuous attacks\n⏱️ Natural delays\n🎯 Single Remote per attack\n⛔ Instant STOP button\n📊 3 Power Levels"
 })
 
 -- ================================================
--- 🚀 START
+-- 🚀 بدء التشغيل
 -- ================================================
 LOAD_GAMEPASSES()
-local opts = {}
-for _, gp in ipairs(GAMEPASS_LIST) do table.insert(opts, gp.name) end
-GamepassDropdown:Refresh(opts)
+local options = {}
+for _, gp in ipairs(GAMEPASS_LIST) do table.insert(options, gp.name) end
+GamepassDropdown:Refresh(options)
 
-print("\n" .. string.rep("☢️", 50))
-print("🔥 BE MAGIC - FINAL JUDGMENT EDITION")
-print("🎯 30 Gamepasses | 20 Exploit Methods")
-print("🛡️ Absolute Protection")
-print("☢️ READY FOR JUDGMENT DAY")
-print(string.rep("☢️", 50))
+print("\n" .. string.rep("🕵️", 40))
+print("🔥 BE MAGIC - STEALTH SHADOW EDITION")
+print("🎯 Client Bypass + Remote Replay")
+print("📊 3 Power Levels | ⛔ Instant STOP")
+print("🕵️ Undetectable Stealth Mode")
+print(string.rep("🕵️", 40))
