@@ -1,5 +1,5 @@
 -- =====================================================
--- 🕵️ ULTIMATE EXTRACTOR + GRABBER (Anti-Lag)
+-- 🕵️ ULTIMATE EXTRACTOR (Post-Execution)
 -- =====================================================
 
 local Players = game:GetService("Players")
@@ -36,14 +36,13 @@ local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 12, 0, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "🕵️ Ultimate Extractor"
+TitleLabel.Text = "🕵️ Post-Execution Extractor"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 15
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
 
--- زر الإغلاق
 local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 32, 0, 32)
 CloseBtn.Position = UDim2.new(1, -38, 0, 4)
@@ -54,7 +53,6 @@ CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.TextSize = 18
 CloseBtn.Parent = TitleBar
 
--- حقل الرابط
 local UrlInput = Instance.new("TextBox")
 UrlInput.Size = UDim2.new(0.9, 0, 0, 45)
 UrlInput.Position = UDim2.new(0.05, 0, 0.2, 0)
@@ -67,19 +65,17 @@ UrlInput.Text = ""
 UrlInput.Parent = MainFrame
 Instance.new("UICorner", UrlInput).CornerRadius = UDim.new(0, 10)
 
--- زر التنفيذ
 local StartBtn = Instance.new("TextButton")
 StartBtn.Size = UDim2.new(0.9, 0, 0, 45)
 StartBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
 StartBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
-StartBtn.Text = "🚀 Extract & Grab"
+StartBtn.Text = "🚀 Execute & Capture"
 StartBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 StartBtn.Font = Enum.Font.GothamBold
 StartBtn.TextSize = 18
 StartBtn.Parent = MainFrame
 Instance.new("UICorner", StartBtn).CornerRadius = UDim.new(0, 10)
 
--- زر النسخ
 local CopyBtn = Instance.new("TextButton")
 CopyBtn.Size = UDim2.new(0.9, 0, 0, 40)
 CopyBtn.Position = UDim2.new(0.05, 0, 0.72, 0)
@@ -91,7 +87,6 @@ CopyBtn.TextSize = 14
 CopyBtn.Parent = MainFrame
 Instance.new("UICorner", CopyBtn).CornerRadius = UDim.new(0, 10)
 
--- حالة البرنامج
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(0.9, 0, 0, 30)
 StatusLabel.Position = UDim2.new(0.05, 0, 0.9, 0)
@@ -135,18 +130,10 @@ end)
 -- =====================================================
 -- المتغيرات
 -- =====================================================
-local fetchedCode = ""
 local cleanCode = ""
 
 -- =====================================================
--- زر الإغلاق
--- =====================================================
-CloseBtn.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-end)
-
--- =====================================================
--- التنفيذ الذكي (مضاد للتعلق)
+-- التنفيذ
 -- =====================================================
 StartBtn.MouseButton1Click:Connect(function()
     local url = UrlInput.Text
@@ -164,34 +151,26 @@ StartBtn.MouseButton1Click:Connect(function()
     end)
     
     if success then
-        fetchedCode = content
-        StatusLabel.Text = "✅ Code fetched! Processing..."
+        StatusLabel.Text = "✅ Code fetched! Executing..."
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
         
-        -- تأخير صغير للتحميل
-        task.wait(0.5)
+        -- هنا بنحفظ الكود النظيف
+        cleanCode = content
         
-        -- تشغيل السكريبت في بيئة منعزلة
-        local func, err = loadstring(fetchedCode)
+        -- تنفيذ السكريبت (مع حماية من التعلق)
+        local func, err = loadstring(content)
         if func then
-            cleanCode = fetchedCode
-            -- تنفيذ مع حماية من التعلق
-            local execSuccess, execErr = pcall(function()
-                task.spawn(func)
-            end)
-            if execSuccess then
-                StatusLabel.Text = "✅ Executed successfully! Code saved."
+            task.spawn(function()
+                pcall(func)
+                StatusLabel.Text = "✅ Executed! Code saved."
                 StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-            else
-                StatusLabel.Text = "⚠️ Error: " .. tostring(execErr):sub(1, 30)
-                StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
-            end
+            end)
         else
-            StatusLabel.Text = "❌ Loadstring error: " .. tostring(err):sub(1, 30)
+            StatusLabel.Text = "❌ Error: " .. tostring(err):sub(1, 30)
             StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
         end
     else
-        StatusLabel.Text = "❌ Failed to fetch: " .. tostring(content):sub(1, 30)
+        StatusLabel.Text = "❌ Failed to fetch!"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
     end
 end)
@@ -205,25 +184,29 @@ CopyBtn.MouseButton1Click:Connect(function()
         StatusLabel.Text = "📋 Clean code copied!"
         StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
     else
-        StatusLabel.Text = "❌ No clean code to copy!"
+        StatusLabel.Text = "❌ No code to copy!"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
     end
 end)
 
 -- =====================================================
--- مراقبة loadstring (تسجيل الكود النظيف)
+-- مراقبة loadstring (للكود النظيف)
 -- =====================================================
-local function hookLoadstring()
+local function captureCleanCode()
     local oldLoadstring = loadstring
     loadstring = function(code, chunkname)
         if code and #code > 10 then
             cleanCode = code
-            print("📜 Script captured:", chunkname or "anonymous")
+            print("📜 Clean code captured!")
         end
         return oldLoadstring(code, chunkname)
     end
 end
 
-hookLoadstring()
+captureCleanCode()
 
-print("🕵️ Ultimate Extractor is ready (Anti-Lag mode)!")
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+print("🕵️ Post-Execution Extractor is ready!")
