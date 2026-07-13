@@ -1,22 +1,24 @@
 -- =====================================================
--- 🕵️ PURE EXTRACTOR (شغال على الرابط بس)
+-- 🕵️ LOADER + READER (يقرا الكود من غير ما ينفذه)
 -- =====================================================
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 local LocalPlayer = Players.LocalPlayer
 
 -- =====================================================
 -- واجهة
 -- =====================================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "PureExtractor"
+ScreenGui.Name = "LoaderReader"
 ScreenGui.Parent = LocalPlayer.PlayerGui
 ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 360, 0, 230)
-MainFrame.Position = UDim2.new(0.5, -180, 0.3, 0)
+MainFrame.Size = UDim2.new(0, 380, 0, 250)
+MainFrame.Position = UDim2.new(0.5, -190, 0.25, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
@@ -36,7 +38,7 @@ local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.8, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0, 10, 0, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "📥 Pure Extractor"
+TitleLabel.Text = "📥 Loader + Reader"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = 14
@@ -65,22 +67,22 @@ UrlInput.Text = ""
 UrlInput.Parent = MainFrame
 Instance.new("UICorner", UrlInput).CornerRadius = UDim.new(0, 10)
 
-local StartBtn = Instance.new("TextButton")
-StartBtn.Size = UDim2.new(0.9, 0, 0, 40)
-StartBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
-StartBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
-StartBtn.Text = "📥 Extract Code"
-StartBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-StartBtn.Font = Enum.Font.GothamBold
-StartBtn.TextSize = 16
-StartBtn.Parent = MainFrame
-Instance.new("UICorner", StartBtn).CornerRadius = UDim.new(0, 10)
+local LoadBtn = Instance.new("TextButton")
+LoadBtn.Size = UDim2.new(0.9, 0, 0, 40)
+LoadBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
+LoadBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+LoadBtn.Text = "📥 Load & Read"
+LoadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadBtn.Font = Enum.Font.GothamBold
+LoadBtn.TextSize = 16
+LoadBtn.Parent = MainFrame
+Instance.new("UICorner", LoadBtn).CornerRadius = UDim.new(0, 10)
 
 local CopyBtn = Instance.new("TextButton")
 CopyBtn.Size = UDim2.new(0.9, 0, 0, 35)
 CopyBtn.Position = UDim2.new(0.05, 0, 0.72, 0)
 CopyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-CopyBtn.Text = "📋 Copy Code"
+CopyBtn.Text = "📋 Copy Clean Code"
 CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyBtn.Font = Enum.Font.GothamBold
 CopyBtn.TextSize = 14
@@ -128,7 +130,7 @@ end)
 -- =====================================================
 -- المتغيرات
 -- =====================================================
-local fetchedCode = ""
+local cleanCode = ""
 
 -- =====================================================
 -- الأزرار
@@ -137,7 +139,7 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
-StartBtn.MouseButton1Click:Connect(function()
+LoadBtn.MouseButton1Click:Connect(function()
     local url = UrlInput.Text
     if url == "" then
         StatusLabel.Text = "⚠️ Paste URL first!"
@@ -153,9 +155,20 @@ StartBtn.MouseButton1Click:Connect(function()
     end)
 
     if success then
-        fetchedCode = content
-        StatusLabel.Text = "✅ Code fetched! (" .. string.len(content) .. " characters)"
+        cleanCode = content
+        StatusLabel.Text = "✅ Code loaded! (" .. string.len(content) .. " characters)"
         StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+        -- محاولة تنفيذ الكود في بيئة منعزلة (من غير ما يشتغل)
+        local func, err = loadstring(content)
+        if func then
+            -- لو الكود سليم، نسجله بس من غير ما ننفذه
+            StatusLabel.Text = "📥 Code loaded, ready to copy!"
+            StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+        else
+            StatusLabel.Text = "⚠️ Code has errors, but saved."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+        end
     else
         StatusLabel.Text = "❌ Failed to fetch!"
         StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -163,8 +176,8 @@ StartBtn.MouseButton1Click:Connect(function()
 end)
 
 CopyBtn.MouseButton1Click:Connect(function()
-    if fetchedCode ~= "" then
-        setclipboard(fetchedCode)
+    if cleanCode ~= "" then
+        setclipboard(cleanCode)
         StatusLabel.Text = "📋 Code copied!"
         StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
     else
@@ -173,4 +186,4 @@ CopyBtn.MouseButton1Click:Connect(function()
     end
 end)
 
-print("📥 Pure Extractor is ready!")
+print("📥 Loader + Reader is ready!")
