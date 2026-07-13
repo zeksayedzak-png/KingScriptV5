@@ -1,103 +1,110 @@
 -- =====================================================
--- 🛡️ ANTI-LAG SYSTEM + MONITOR
+-- 🕵️ ULTIMATE EXTRACTOR + GRABBER (Anti-Lag)
 -- =====================================================
 
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Debris = game:GetService("Debris")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 -- =====================================================
--- واجهة سوداء بسيطة (قابلة للسحب)
+-- الواجهة
 -- =====================================================
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AntiLagUI"
+ScreenGui.Name = "UltimateExtractor"
 ScreenGui.Parent = LocalPlayer.PlayerGui
 ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 200)
-MainFrame.Position = UDim2.new(0.5, -150, 0.25, 0)
+MainFrame.Size = UDim2.new(0, 360, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -180, 0.25, 0)
 MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 MainFrame.BackgroundTransparency = 0.15
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
 MainFrame.Parent = ScreenGui
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 16)
 
+-- شريط العنوان
 local TitleBar = Instance.new("Frame")
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
 TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
 Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 12)
 
 local TitleLabel = Instance.new("TextLabel")
-TitleLabel.Size = UDim2.new(0.8, 0, 1, 0)
-TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+TitleLabel.Position = UDim2.new(0, 12, 0, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "🛡️ Anti-Lag System"
+TitleLabel.Text = "🕵️ Ultimate Extractor"
 TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 200)
 TitleLabel.Font = Enum.Font.GothamBold
-TitleLabel.TextSize = 14
+TitleLabel.TextSize = 15
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.Parent = TitleBar
 
+-- زر الإغلاق
 local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 3)
+CloseBtn.Size = UDim2.new(0, 32, 0, 32)
+CloseBtn.Position = UDim2.new(1, -38, 0, 4)
 CloseBtn.Text = "✕"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.TextSize = 16
+CloseBtn.TextSize = 18
 CloseBtn.Parent = TitleBar
 
--- زر ON/OFF
-local ToggleBtn = Instance.new("TextButton")
-ToggleBtn.Size = UDim2.new(0.8, 0, 0, 40)
-ToggleBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
-ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
-ToggleBtn.Text = "🟢 Anti-Lag ON"
-ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 14
-ToggleBtn.Parent = MainFrame
-Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 10)
+-- حقل الرابط
+local UrlInput = Instance.new("TextBox")
+UrlInput.Size = UDim2.new(0.9, 0, 0, 45)
+UrlInput.Position = UDim2.new(0.05, 0, 0.2, 0)
+UrlInput.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+UrlInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+UrlInput.Font = Enum.Font.Gotham
+UrlInput.TextSize = 14
+UrlInput.PlaceholderText = "Paste Script URL here..."
+UrlInput.Text = ""
+UrlInput.Parent = MainFrame
+Instance.new("UICorner", UrlInput).CornerRadius = UDim.new(0, 10)
 
--- زر تنظيف يدوي
-local CleanBtn = Instance.new("TextButton")
-CleanBtn.Size = UDim2.new(0.8, 0, 0, 35)
-CleanBtn.Position = UDim2.new(0.1, 0, 0.6, 0)
-CleanBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-CleanBtn.Text = "🧹 Clean Parts Now"
-CleanBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CleanBtn.Font = Enum.Font.GothamBold
-CleanBtn.TextSize = 13
-CleanBtn.Parent = MainFrame
-Instance.new("UICorner", CleanBtn).CornerRadius = UDim.new(0, 10)
+-- زر التنفيذ
+local StartBtn = Instance.new("TextButton")
+StartBtn.Size = UDim2.new(0.9, 0, 0, 45)
+StartBtn.Position = UDim2.new(0.05, 0, 0.5, 0)
+StartBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+StartBtn.Text = "🚀 Extract & Grab"
+StartBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+StartBtn.Font = Enum.Font.GothamBold
+StartBtn.TextSize = 18
+StartBtn.Parent = MainFrame
+Instance.new("UICorner", StartBtn).CornerRadius = UDim.new(0, 10)
 
--- نص الحالة
+-- زر النسخ
+local CopyBtn = Instance.new("TextButton")
+CopyBtn.Size = UDim2.new(0.9, 0, 0, 40)
+CopyBtn.Position = UDim2.new(0.05, 0, 0.72, 0)
+CopyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+CopyBtn.Text = "📋 Copy Clean Code"
+CopyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyBtn.Font = Enum.Font.GothamBold
+CopyBtn.TextSize = 14
+CopyBtn.Parent = MainFrame
+Instance.new("UICorner", CopyBtn).CornerRadius = UDim.new(0, 10)
+
+-- حالة البرنامج
 local StatusLabel = Instance.new("TextLabel")
 StatusLabel.Size = UDim2.new(0.9, 0, 0, 30)
-StatusLabel.Position = UDim2.new(0.05, 0, 0.85, 0)
+StatusLabel.Position = UDim2.new(0.05, 0, 0.9, 0)
 StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "✅ System Ready"
+StatusLabel.Text = "🔹 Ready"
 StatusLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
 StatusLabel.Font = Enum.Font.Gotham
 StatusLabel.TextSize = 12
 StatusLabel.Parent = MainFrame
 
 -- =====================================================
--- المتغيرات
--- =====================================================
-local isActive = true
-local connections = {}
-
--- =====================================================
 -- السحب باللمس
 -- =====================================================
-local UIS = game:GetService("UserInputService")
 local dragData = {dragging = false, startPos = nil, startMouse = nil}
 
 TitleBar.InputBegan:Connect(function(input)
@@ -108,113 +115,115 @@ TitleBar.InputBegan:Connect(function(input)
     end
 end)
 
-UIS.InputChanged:Connect(function(input)
+UserInputService.InputChanged:Connect(function(input)
     if dragData.dragging then
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = Vector2.new(input.Position.X, input.Position.Y) - dragData.startMouse
-            MainFrame.Position = UDim2.new(0, dragData.startPos.X.Offset + delta.X, 0, dragData.startPos.Y.Offset + delta.Y)
+            local newX = dragData.startPos.X.Offset + delta.X
+            local newY = dragData.startPos.Y.Offset + delta.Y
+            MainFrame.Position = UDim2.new(0, newX, 0, newY)
         end
     end
 end)
 
-UIS.InputEnded:Connect(function(input)
+UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragData.dragging = false
     end
 end)
 
 -- =====================================================
--- نظام مكافحة التعلق
+-- المتغيرات
 -- =====================================================
-local function safeLoop(callback, interval)
-    interval = interval or 0.1
-    task.spawn(function()
-        while isActive do
-            task.wait(interval)
-            pcall(callback)
-        end
-    end)
-end
-
--- تنظيف الأجزاء الزائدة
-local function cleanParts()
-    local count = 0
-    for _, part in pairs(workspace:GetDescendants()) do
-        if part:IsA("Part") and part.Parent == workspace and part.Anchored == false then
-            if part:GetMass() > 1000 then
-                part:Destroy()
-                count = count + 1
-            end
-        end
-    end
-    if count > 0 then
-        StatusLabel.Text = "🧹 تم حذف " .. count .. " جزء ثقيل"
-        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-    end
-end
-
--- مراقبة الأجزاء الجديدة
-local function monitorNewParts()
-    local conn = workspace.DescendantAdded:Connect(function(part)
-        if isActive and part:IsA("Part") and part.Anchored == false then
-            if part:GetMass() > 800 then
-                Debris:AddItem(part, 5)
-            end
-        end
-    end)
-    table.insert(connections, conn)
-end
+local fetchedCode = ""
+local cleanCode = ""
 
 -- =====================================================
--- تشغيل النظام
+-- زر الإغلاق
 -- =====================================================
-local function startAntiLag()
-    isActive = true
-    monitorNewParts()
-    safeLoop(cleanParts, 15)
-    StatusLabel.Text = "🟢 Anti-Lag Active"
-    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-    ToggleBtn.Text = "🟢 Anti-Lag ON"
-    ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
-end
-
-local function stopAntiLag()
-    isActive = false
-    for _, conn in pairs(connections) do
-        pcall(conn.Disconnect, conn)
-    end
-    connections = {}
-    StatusLabel.Text = "🔴 Anti-Lag OFF"
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-    ToggleBtn.Text = "🔴 Anti-Lag OFF"
-    ToggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-end
-
--- =====================================================
--- أزرار التحكم
--- =====================================================
-ToggleBtn.MouseButton1Click:Connect(function()
-    if isActive then
-        stopAntiLag()
-    else
-        startAntiLag()
-    end
-end)
-
-CleanBtn.MouseButton1Click:Connect(function()
-    StatusLabel.Text = "⏳ جاري التنظيف..."
-    StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
-    cleanParts()
-    StatusLabel.Text = "✅ تم التنظيف!"
-    StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
-end)
-
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
 -- =====================================================
--- بدء التشغيل
+-- التنفيذ الذكي (مضاد للتعلق)
 -- =====================================================
-startAntiLag()
-print("🛡️ Anti-Lag System is running!")
+StartBtn.MouseButton1Click:Connect(function()
+    local url = UrlInput.Text
+    if url == "" then
+        StatusLabel.Text = "⚠️ Paste URL first!"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+        return
+    end
+    
+    StatusLabel.Text = "⏳ Fetching..."
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local success, content = pcall(function()
+        return game:HttpGet(url)
+    end)
+    
+    if success then
+        fetchedCode = content
+        StatusLabel.Text = "✅ Code fetched! Processing..."
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+        
+        -- تأخير صغير للتحميل
+        task.wait(0.5)
+        
+        -- تشغيل السكريبت في بيئة منعزلة
+        local func, err = loadstring(fetchedCode)
+        if func then
+            cleanCode = fetchedCode
+            -- تنفيذ مع حماية من التعلق
+            local execSuccess, execErr = pcall(function()
+                task.spawn(func)
+            end)
+            if execSuccess then
+                StatusLabel.Text = "✅ Executed successfully! Code saved."
+                StatusLabel.TextColor3 = Color3.fromRGB(0, 255, 100)
+            else
+                StatusLabel.Text = "⚠️ Error: " .. tostring(execErr):sub(1, 30)
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+            end
+        else
+            StatusLabel.Text = "❌ Loadstring error: " .. tostring(err):sub(1, 30)
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+        end
+    else
+        StatusLabel.Text = "❌ Failed to fetch: " .. tostring(content):sub(1, 30)
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end)
+
+-- =====================================================
+-- نسخ الكود النظيف
+-- =====================================================
+CopyBtn.MouseButton1Click:Connect(function()
+    if cleanCode ~= "" then
+        setclipboard(cleanCode)
+        StatusLabel.Text = "📋 Clean code copied!"
+        StatusLabel.TextColor3 = Color3.fromRGB(0, 200, 255)
+    else
+        StatusLabel.Text = "❌ No clean code to copy!"
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end)
+
+-- =====================================================
+-- مراقبة loadstring (تسجيل الكود النظيف)
+-- =====================================================
+local function hookLoadstring()
+    local oldLoadstring = loadstring
+    loadstring = function(code, chunkname)
+        if code and #code > 10 then
+            cleanCode = code
+            print("📜 Script captured:", chunkname or "anonymous")
+        end
+        return oldLoadstring(code, chunkname)
+    end
+end
+
+hookLoadstring()
+
+print("🕵️ Ultimate Extractor is ready (Anti-Lag mode)!")
